@@ -1,7 +1,7 @@
 import json
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.http import Http404, HttpResponse
@@ -26,7 +26,7 @@ class SendInvite(FormView):
     template_name = "invitations/forms/_invite.html"
     form_class = InviteForm
 
-    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -54,7 +54,7 @@ class SendInvite(FormView):
 class SendJSONInvite(View):
     http_method_names = ["post"]
 
-    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def dispatch(self, request, *args, **kwargs):
         if app_settings.ALLOW_JSON_INVITES:
             return super().dispatch(request, *args, **kwargs)
