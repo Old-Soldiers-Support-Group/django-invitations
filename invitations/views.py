@@ -2,12 +2,14 @@ import json
 
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.urls import reverse_lazy
 from django.views.generic import FormView, View
 from django.views.generic.detail import SingleObjectMixin
 
@@ -22,9 +24,10 @@ Invitation = get_invitation_model()
 InviteForm = get_invite_form()
 
 
-class SendInvite(FormView):
+class SendInvite(SuccessMessageMixin, FormView):
     template_name = "invitations/forms/_invite.html"
     form_class = InviteForm
+    success_message = "%(email)s has been invited."
 
     @method_decorator(staff_member_required)
     def dispatch(self, request, *args, **kwargs):
@@ -40,12 +43,7 @@ class SendInvite(FormView):
             invite.send_invitation(self.request)
         except Exception:
             return self.form_invalid(form)
-        return self.render_to_response(
-            self.get_context_data(
-                form=self.get_form(),
-                success_message=_("%(email)s has been invited") % {"email": email},
-            ),
-        )
+        return HttpResponseRedirect(reverse_lazy("invitations:send-invite"))
 
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))
