@@ -41,6 +41,9 @@ class SendInvite(SuccessMessageMixin, FormView):
             invite.inviter = self.request.user
             invite.save()
             invite.send_invitation(self.request)
+            success_message = self.get_success_message(form.cleaned_data)
+            if success_message:
+                messages.success(self.request, success_message)
         except Exception:
             return self.form_invalid(form)
         return HttpResponseRedirect(reverse_lazy("invitations:send-invite"))
