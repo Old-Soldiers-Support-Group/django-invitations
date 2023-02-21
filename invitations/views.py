@@ -30,6 +30,8 @@ class SendInvite(FormView):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
+    def get_success_message(self)
+
     def form_valid(self, form):
         email = form.cleaned_data["email"]
 
@@ -42,7 +44,7 @@ class SendInvite(FormView):
             return self.form_invalid(form)
         return self.render_to_response(
             self.get_context_data(
-                form=form,
+                form=self.get_form(),
                 success_message=_("%(email)s has been invited") % {"email": email},
             ),
         )
