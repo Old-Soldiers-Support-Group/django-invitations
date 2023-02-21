@@ -30,8 +30,6 @@ class SendInvite(FormView):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-    def get_success_message(self)
-
     def form_valid(self, form):
         email = form.cleaned_data["email"]
 
